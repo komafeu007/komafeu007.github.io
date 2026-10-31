@@ -13,7 +13,7 @@ Personal portfolio / CV site (French) for Simon Foussat-Ferré. Static, no build
 Do not hand-edit the visible markup. The `<body>` only contains "Unpacking…" loading placeholders (lines ~21–23). Everything real lives in three `<script>` blocks that a bootstrap script (lines ~25–373) decodes at runtime:
 
 - `<script type="__bundler/template">` (line 388) — a JSON **string** containing the actual page HTML: all text, inline CSS, the `<x-dc>` design-component markup, and an inline `<script type="text/x-dc">` component-logic class.
-- `<script type="__bundler/manifest">` (line 376) — JSON map of uuid → asset. Holds the gzip+base64 `dc-runtime` engine, React 18 + ReactDOM 18 (inlined), and two woff2 fonts (`compressed` flag marks gzip; fonts are raw base64).
+- `<script type="__bundler/manifest">` (line 376) — JSON map of uuid → asset. Holds the gzip+base64 `dc-runtime` engine, React 18 + ReactDOM 18 (inlined), and three woff2 fonts (IBM Plex Mono latin, Familjen Grotesk latin + latin-ext) (`compressed` flag marks gzip; fonts are raw base64).
 - `<script type="__bundler/ext_resources">` and `__bundler/page_order` — external-resource markers and nested-page list (currently empty).
 
 The runtime inlines/decompresses via `DecompressionStream('gzip')`. Editing anything outside the template/manifest strings has no effect on the rendered page.
@@ -52,6 +52,7 @@ python3 -c "import re,json; h=open('index.html').read(); [json.loads(re.search(r
 ## Conventions / notes
 
 - Site language is French; keep content French unless asked otherwise.
-- Fonts: IBM Plex Mono and a second woff2, loaded via `fonts.gstatic.com` `@font-face` in the template; avoid adding new external hosts.
+- Fonts: IBM Plex Mono (data labels, tags, meta) and Familjen Grotesk (display + body). Both are embedded in the manifest as raw-base64 woff2 and referenced by uuid in the template's `@font-face`; the page now makes **no** external font requests, so keep it that way — add a family by adding a manifest entry plus a uuid reference, not by linking a CDN.
+- Design tokens live as CSS custom properties on `.pg` (`--ink`, `--paper`, `--teal`, `--indigo`, `--graphite`, `--sand`, `--amber`, …). Card colour classes (`teal`, `indigo`, `graphite`, `sand`, `paper`, plus `-t` tints) encode the discipline legend shown in the top bar: keep them consistent with each card's `disc` label.
 - Contact link in template: `mailto:simonferre33@gmail.com`; also links to github.com and linkedin.com.
-- Design-canvas sizing is set by `<meta name="hz:canvas-*">` (1360×2750) and `hz:slide-selector`.
+- Design-canvas sizing is set by `<meta name="hz:canvas-*">` (1360×3712) and `hz:slide-selector`; keep it in sync with `data-canvas-width`/`data-canvas-height` on `.pg` when the layout height changes.
